@@ -1,17 +1,14 @@
 package main
 
 import (
-	"encoding/json"
+	"database/sql"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/elguapo1611/karaoke/src/model"
-	"github.com/gorilla/mux"
-
-	"database/sql"
-
+	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/microcosm-cc/bluemonday"
 )
 
 var db *sql.DB
@@ -26,28 +23,49 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer db.Close()
+	// defer db.Close()
 
-	router := mux.NewRouter()
-	router.HandleFunc("/songs.json", GetSongs).Methods("POST")
-	router.HandleFunc("/songs.json", GetSongs).Methods("GET")
-	log.Fatal(http.ListenAndServe("localhost:8000", router))
+	router := gin.Default()
+
+	// search for songs
+	router.GET("/search/:term", search)
+
+	// get all songs in the playlist
+	router.GET("/playlist", getPlaylist)
+
+	// add a song to the playlist
+	router.PUT("/playlist/song/:song_id", getPlaylist)
+	// update a song order within the playlist
+	router.POST("/playlist/song/:playlist_song_id", getPlaylist)
+	// remove a song from the playlist
+	router.DELETE("/playlist/song/:playlist_song_id", getPlaylist)
+	// reset the playlist and clear all songs
+	router.DELETE("/playlist/reset", getPlaylist)
+
+	// page for adding songs and updating the playlist
+	router.GET("/remote_control", renderRemoteControl)
+
+	// page that plays the karaoke tracks
+	router.GET("/karaoke_room", renderKaraokeRoom)
+
+	router.Run("localhost:3001")
+
 }
-func GetSongs(w http.ResponseWriter, r *http.Request) {
+
+func renderRemoteControl(c *gin.Context) {
+}
+
+func renderKaraokeRoom(c *gin.Context) {
+}
+
+func search(c *gin.Context) {
+	p := bluemonday.StrictPolicy()
+	term := p.Sanitize(c.Param("term"))
+	songs := model.Search(term)
+	c.JSON(http.StatusOK, songs)
+}
+
+func getPlaylist(c *gin.Context) {
 	songs := model.Search("radio")
-	fmt.Println(songs)
-	w.Header().Set("Content-Type", "application/json")
-	rows, err := db.Query("SELECT * FROM songs LIMIT 10")
-	fmt.Println(rows)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	json, err := json.Marshal(songs)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	// fmt.Println(json)
-	w.Write(json)
+	c.JSON(http.StatusOK, songs)
 }

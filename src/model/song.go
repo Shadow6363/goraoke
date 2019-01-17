@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 )
 
@@ -10,6 +11,7 @@ var DB *sql.DB
 
 // InitSong Set the db variable as a pointer
 func InitSong(db *sql.DB) {
+	fmt.Println("initializing song")
 	DB = db
 }
 
@@ -40,7 +42,8 @@ func Search(term string) []Song {
       SELECT rowid
       FROM songs_search
       WHERE songs_search MATCH ? ORDER BY bm25(songs_search)
-    )
+	)
+	LIMIT 50
   `, term)
 	checkErr(err)
 
