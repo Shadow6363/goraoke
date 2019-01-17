@@ -1,48 +1,53 @@
 package main
 
 import (
-    "encoding/json"
-    "log"
-    "net/http"
-    "github.com/gorilla/mux"
-    
-    "fmt"
-    
-    _ "github.com/mattn/go-sqlite3"
+	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
 
-    
+	"github.com/elguapo1611/karaoke/src/model"
+	"github.com/gorilla/mux"
+
+	"database/sql"
+
+	_ "github.com/mattn/go-sqlite3"
 )
-type Person struct {
-    ID        string   `json:"id,omitempty"`
-    Firstname string   `json:"firstname,omitempty"`
-    Lastname  string   `json:"lastname,omitempty"`
-    Address   *Address `json:"address,omitempty"`
-}
-type Address struct {
-    City  string `json:"city,omitempty"`
-    State string `json:"state,omitempty"`
-}
 
-var people []Person
+var db *sql.DB
+var err error
 
 // our main function
 func main() {
-    fmt.Print("foo")
-    people = append(people, Person{ID: "1", Firstname: "John", Lastname: "Doe", Address: &Address{City: "City X", State: "State X"}})
-    people = append(people, Person{ID: "2", Firstname: "Koko", Lastname: "Doe", Address: &Address{City: "City Z", State: "State Y"}})
-    people = append(people, Person{ID: "3", Firstname: "Francis", Lastname: "Sunday"})
-    router := mux.NewRouter()
-    router.HandleFunc("/people.json", GetPeople).Methods("GET")
-    router.HandleFunc("/people/{id}", GetPerson).Methods("GET")
-    router.HandleFunc("/people/{id}", CreatePerson).Methods("POST")
-    router.HandleFunc("/people/{id}", DeletePerson).Methods("DELETE")
-    log.Fatal(http.ListenAndServe("localhost:8000", router))
+	db, err = sql.Open("sqlite3", "./db/karaoke.db")
+
+	model.InitSong(db)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer db.Close()
+
+	router := mux.NewRouter()
+	router.HandleFunc("/songs.json", GetSongs).Methods("POST")
+	router.HandleFunc("/songs.json", GetSongs).Methods("GET")
+	log.Fatal(http.ListenAndServe("localhost:8000", router))
 }
-func GetPeople(w http.ResponseWriter, r *http.Request) {
-    fmt.Print("get people")
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(people)
+func GetSongs(w http.ResponseWriter, r *http.Request) {
+	songs := model.Search("radio")
+	fmt.Println(songs)
+	w.Header().Set("Content-Type", "application/json")
+	rows, err := db.Query("SELECT * FROM songs LIMIT 10")
+	fmt.Println(rows)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	json, err := json.Marshal(songs)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// fmt.Println(json)
+	w.Write(json)
 }
-func GetPerson(w http.ResponseWriter, r *http.Request) {}
-func CreatePerson(w http.ResponseWriter, r *http.Request) {}
-func DeletePerson(w http.ResponseWriter, r *http.Request) {}

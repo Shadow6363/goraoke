@@ -25,6 +25,7 @@ CREATE INDEX index_playlist_songs_on_room_id_and_song_id_and_sort_order ON playl
 
 CREATE TABLE songs (
   id INTEGER PRIMARY KEY,
+  uuid NOT NULL,
   name NOT NULL,
   artist NOT NULL,
   source,
@@ -36,6 +37,8 @@ CREATE TABLE songs (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
+
+CREATE UNIQUE INDEX index_songs_on_uuid ON songs (uuid);
 
 -- create search index on songs
 CREATE VIRTUAL TABLE songs_search USING FTS5(
@@ -62,13 +65,13 @@ CREATE TRIGGER songs_after_update AFTER UPDATE ON songs BEGIN
   INSERT INTO songs_search(rowid, name, artist, keywords) VALUES (new.id, new.name, new.artist, new.keywords);
 END;
 
-INSERT INTO songs(name, artist, source, language, filename, duration_in_seconds, keywords)
-  VALUES("Under the sea", "disney", "songfly", "en", "foo.mp3", 200, "foo bar fizz buzz");
+-- INSERT INTO songs(name, artist, source, language, filename, duration_in_seconds, keywords, uuid)
+--   VALUES("Under the sea", "disney", "songfly", "en", "foo.mp3", 200, "foo bar fizz buzz", "foo");
 
 SELECT *
 FROM songs
 WHERE id IN (SELECT rowid
              FROM songs_search
-             WHERE songs_search MATCH 'fizz'
+             WHERE songs_search MATCH 'video'
              ORDER BY bm25(songs_search)
              );
