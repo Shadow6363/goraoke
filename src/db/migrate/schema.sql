@@ -75,3 +75,13 @@ WHERE id IN (SELECT rowid
              WHERE songs_search MATCH 'video'
              ORDER BY bm25(songs_search)
              );
+
+
+INSERT INTO playlist_songs(song_id, user_id, sort_order)
+   VALUES(1, 1, 1);
+INSERT INTO playlist_songs(song_id, user_id, sort_order)
+   VALUES(2, 1, 1);
+INSERT INTO playlist_songs(song_id, user_id, sort_order)
+   VALUES(3, 1, 1);
+INSERT INTO playlist_songs(song_id, user_id, sort_order)
+   VALUES(4, 1, 10);

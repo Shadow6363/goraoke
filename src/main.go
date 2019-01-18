@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/elguapo1611/karaoke/src/model"
+	"github.com/elguapo1611/karaoke/src/helpers"
+	"github.com/elguapo1611/karaoke/src/playlist"
+	"github.com/elguapo1611/karaoke/src/song"
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/microcosm-cc/bluemonday"
@@ -18,12 +20,14 @@ var err error
 func main() {
 	db, err = sql.Open("sqlite3", "./db/karaoke.db")
 
-	model.InitSong(db)
+	song.Init(db)
+	playlist.Init(db)
 
+	helpers.CheckErr(err)
 	if err != nil {
 		fmt.Println(err)
 	}
-	// defer db.Close()
+	defer db.Close()
 
 	router := gin.Default()
 
@@ -61,11 +65,11 @@ func renderKaraokeRoom(c *gin.Context) {
 func search(c *gin.Context) {
 	p := bluemonday.StrictPolicy()
 	term := p.Sanitize(c.Param("term"))
-	songs := model.Search(term)
+	songs := song.Search(term)
 	c.JSON(http.StatusOK, songs)
 }
 
 func getPlaylist(c *gin.Context) {
-	songs := model.Search("radio")
-	c.JSON(http.StatusOK, songs)
+	playlist := playlist.GetPlaylist(10)
+	c.JSON(http.StatusOK, playlist)
 }
