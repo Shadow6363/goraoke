@@ -38,15 +38,13 @@ func main() {
 	router.GET("/playlist", getPlaylist)
 
 	// add a song to the playlist
-	router.PUT("/playlist/song/:song_id", getPlaylist)
-	// update a song order within the playlist
-	router.POST("/playlist/song/:playlist_song_id", getPlaylist)
+	router.PUT("/playlist/song", addPlaylistSong)
 	// remove a song from the playlist
-	router.DELETE("/playlist/song/:playlist_song_id", getPlaylist)
+	router.DELETE("/playlist/song", deletePlaylistSong)
 	// reset the playlist and clear all songs
 	router.DELETE("/playlist/reset", reset)
 	// change order of playlist
-	router.GET("/playlist/change_order", changeOrder)
+	router.POST("/playlist/change_order", changeOrder)
 
 	// page for adding songs and updating the playlist
 	router.GET("/remote_control", renderRemoteControl)
@@ -56,14 +54,6 @@ func main() {
 
 	router.Run("localhost:3001")
 
-}
-
-func changeOrder(c *gin.Context) {
-	c.JSON(http.StatusOK, playlist.ChangeOrder(6, 3))
-}
-func reset(c *gin.Context) {
-	playlist.Reset()
-	c.JSON(http.StatusOK, playlist.OK{OK: true})
 }
 
 func renderRemoteControl(c *gin.Context) {
@@ -77,6 +67,53 @@ func search(c *gin.Context) {
 	term := p.Sanitize(c.Param("term"))
 	songs := song.Search(term)
 	c.JSON(http.StatusOK, songs)
+}
+
+type changeOrderParams struct {
+	PlaylistSongID int `json:"playlist_song_id" binding:"required"`
+	SortOrder      int `json:"sort_order" binding:"required"`
+}
+
+// curl -i -X  DELETE http://localhost:3000/playlist/change_order \
+//   -H "Accept: application/json" -H "Content-Type: application/json" \
+//   -d '{ "playlist_song_id": 6, "sort_order": 3 }'
+func changeOrder(c *gin.Context) {
+	var params changeOrderParams
+	c.BindJSON(&params)
+	c.JSON(http.StatusOK, playlist.ChangeOrder(params.PlaylistSongID, params.SortOrder))
+}
+
+type deletePlaylistSongParams struct {
+	PlaylistSongID int `json:"playlist_song_id" binding:"required"`
+}
+
+// curl -i -X  DELETE http://localhost:3000/playlist/song \
+//   -H "Accept: application/json" -H "Content-Type: application/json" \
+//   -d '{ "playlist_song_id": 6 }'
+func deletePlaylistSong(c *gin.Context) {
+	var params deletePlaylistSongParams
+	c.BindJSON(&params)
+	playlist.DeletePlaylistSong(params.PlaylistSongID)
+	c.JSON(http.StatusOK, helpers.NewOK())
+}
+
+type addPlaylistSongParams struct {
+	SongID int `json:"song_id" binding:"required"`
+}
+
+// curl -i -X PUT http://localhost:3000/playlist/song \
+//   -H "Accept: application/json" -H "Content-Type: application/json" \
+//   -d '{ "song_id": 6 }'
+func addPlaylistSong(c *gin.Context) {
+	var params addPlaylistSongParams
+	c.BindJSON(&params)
+	playlist.AddSong(params.SongID)
+	c.JSON(http.StatusOK, helpers.NewOK())
+}
+
+func reset(c *gin.Context) {
+	playlist.Reset()
+	c.JSON(http.StatusOK, helpers.NewOK())
 }
 
 func getPlaylist(c *gin.Context) {

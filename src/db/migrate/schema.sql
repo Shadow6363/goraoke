@@ -78,6 +78,7 @@ CREATE TABLE playlist_songs (
 );
 
 CREATE INDEX index_playlist_songs_on_room_id_and_song_id_and_sort_order ON playlist_songs (song_id, sort_order);
+CREATE INDEX index_playlist_songs_on_sort_order ON playlist_songs (sort_order);
 
 
 
