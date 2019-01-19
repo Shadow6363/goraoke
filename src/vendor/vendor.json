@@ -47,6 +47,12 @@
 			"revisionTime": "2019-01-09T07:22:47Z"
 		},
 		{
+			"checksumSHA1": "EFilcRi6b0Bf3nckKo3UbeqoW50=",
+			"path": "github.com/gorilla/websocket",
+			"revision": "95ba29eb981bbb27d92e1f70bf8a1949452d926b",
+			"revisionTime": "2018-12-06T07:02:39Z"
+		},
+		{
 			"checksumSHA1": "Ah2HsEkTM0gBO7XNPmjtM8MAvKE=",
 			"path": "github.com/json-iterator/go",
 			"revision": "f64ce68b6eea7b957a0d0d43e224dfe491b0babe",

@@ -15,10 +15,13 @@ import (
 
 var db *sql.DB
 var err error
+var hub *Hub
 
 // our main function
 func main() {
 	db, err = sql.Open("sqlite3", "./db/karaoke.db")
+	hub = newHub()
+	go hub.run()
 
 	song.Init(db)
 	playlist.Init(db)
@@ -30,6 +33,9 @@ func main() {
 	defer db.Close()
 
 	router := gin.Default()
+
+	// set html template directory
+	router.LoadHTMLGlob("templates/*")
 
 	// search for songs
 	router.GET("/search/:term", search)
@@ -46,20 +52,30 @@ func main() {
 	// change order of playlist
 	router.POST("/playlist/change_order", changeOrder)
 
+	// websocket connection
+	router.GET("/ws", handleWebsocket)
+
 	// page for adding songs and updating the playlist
 	router.GET("/remote_control", renderRemoteControl)
 
 	// page that plays the karaoke tracks
-	router.GET("/karaoke_room", renderKaraokeRoom)
+	router.GET("/", renderKaraokeRoom)
 
 	router.Run("localhost:3001")
 
+}
+func handleWebsocket(c *gin.Context) {
+	serveWs(hub, c.Writer, c.Request)
 }
 
 func renderRemoteControl(c *gin.Context) {
 }
 
 func renderKaraokeRoom(c *gin.Context) {
+	fmt.Println("loading karaoke room")
+	c.HTML(http.StatusOK, "home.tmpl", gin.H{
+		"title": "Karaoke",
+	})
 }
 
 func search(c *gin.Context) {
@@ -103,7 +119,7 @@ type addPlaylistSongParams struct {
 
 // curl -i -X PUT http://localhost:3000/playlist/song \
 //   -H "Accept: application/json" -H "Content-Type: application/json" \
-//   -d '{ "song_id": 6 }'
+//   -d '{ "song_id": 1000 }'
 func addPlaylistSong(c *gin.Context) {
 	var params addPlaylistSongParams
 	c.BindJSON(&params)
