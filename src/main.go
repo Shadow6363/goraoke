@@ -44,7 +44,9 @@ func main() {
 	// remove a song from the playlist
 	router.DELETE("/playlist/song/:playlist_song_id", getPlaylist)
 	// reset the playlist and clear all songs
-	router.DELETE("/playlist/reset", getPlaylist)
+	router.DELETE("/playlist/reset", reset)
+	// change order of playlist
+	router.GET("/playlist/change_order", changeOrder)
 
 	// page for adding songs and updating the playlist
 	router.GET("/remote_control", renderRemoteControl)
@@ -54,6 +56,14 @@ func main() {
 
 	router.Run("localhost:3001")
 
+}
+
+func changeOrder(c *gin.Context) {
+	c.JSON(http.StatusOK, playlist.ChangeOrder(6, 3))
+}
+func reset(c *gin.Context) {
+	playlist.Reset()
+	c.JSON(http.StatusOK, playlist.OK{OK: true})
 }
 
 func renderRemoteControl(c *gin.Context) {

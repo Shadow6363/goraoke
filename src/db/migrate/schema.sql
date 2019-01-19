@@ -12,17 +12,6 @@ CREATE TABLE users (
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-CREATE TABLE playlist_songs (
-  id INTEGER PRIMARY KEY,
-  song_id INT NOT NULL,
-  user_id INT NOT NULL,
-  sort_order INT,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
-);
-
-CREATE INDEX index_playlist_songs_on_room_id_and_song_id_and_sort_order ON playlist_songs (song_id, sort_order);
-
 CREATE TABLE songs (
   id INTEGER PRIMARY KEY,
   uuid NOT NULL,
@@ -77,11 +66,46 @@ WHERE id IN (SELECT rowid
              );
 
 
+DROP TABLE IF EXISTS playlist_songs;
+
+CREATE TABLE playlist_songs (
+  id INTEGER PRIMARY KEY,
+  song_id INT NOT NULL,
+  user_id INT NOT NULL,
+  sort_order INT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE INDEX index_playlist_songs_on_room_id_and_song_id_and_sort_order ON playlist_songs (song_id, sort_order);
+
+
+
 INSERT INTO playlist_songs(song_id, user_id, sort_order)
    VALUES(1, 1, 1);
 INSERT INTO playlist_songs(song_id, user_id, sort_order)
-   VALUES(2, 1, 1);
+   VALUES(2, 1, 2);
 INSERT INTO playlist_songs(song_id, user_id, sort_order)
-   VALUES(3, 1, 1);
+   VALUES(3, 1, 3);
 INSERT INTO playlist_songs(song_id, user_id, sort_order)
-   VALUES(4, 1, 10);
+   VALUES(4, 1, 4);
+INSERT INTO playlist_songs(song_id, user_id, sort_order)
+   VALUES(5, 1, 5);
+INSERT INTO playlist_songs(song_id, user_id, sort_order)
+   VALUES(6, 1, 6);
+INSERT INTO playlist_songs(song_id, user_id, sort_order)
+   VALUES(7, 1, 7);
+INSERT INTO playlist_songs(song_id, user_id, sort_order)
+   VALUES(8, 1, 8);
+INSERT INTO playlist_songs(song_id, user_id, sort_order)
+   VALUES(9, 1, 9);
+
+
+-- order was 2 now it's 5
+UPDATE playlist_songs 
+  SET sort_order = sort_order - 1
+  WHERE sort_order >= 2 and sort_order <= 5;
+
+UPDATE playlist_songs
+  SET order = 5
+  WHERE id = 1
