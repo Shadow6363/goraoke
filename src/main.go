@@ -9,6 +9,7 @@ import (
 	"github.com/elguapo1611/karaoke/src/playlist"
 	"github.com/elguapo1611/karaoke/src/song"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/microcosm-cc/bluemonday"
 )
@@ -90,10 +91,11 @@ type changeOrderParams struct {
 	SortOrder      int `json:"sort_order" binding:"required"`
 }
 
-// curl -i -X  DELETE http://localhost:3000/playlist/change_order \
+// curl -i -X  POST http://localhost:3000/playlist/change_order \
 //   -H "Accept: application/json" -H "Content-Type: application/json" \
 //   -d '{ "playlist_song_id": 6, "sort_order": 3 }'
 func changeOrder(c *gin.Context) {
+	go publishUpdate("orderChanged")
 	var params changeOrderParams
 	c.BindJSON(&params)
 	c.JSON(http.StatusOK, playlist.ChangeOrder(params.PlaylistSongID, params.SortOrder))
@@ -107,6 +109,7 @@ type deletePlaylistSongParams struct {
 //   -H "Accept: application/json" -H "Content-Type: application/json" \
 //   -d '{ "playlist_song_id": 6 }'
 func deletePlaylistSong(c *gin.Context) {
+	go publishUpdate("songRemoved")
 	var params deletePlaylistSongParams
 	c.BindJSON(&params)
 	playlist.DeletePlaylistSong(params.PlaylistSongID)
@@ -117,10 +120,21 @@ type addPlaylistSongParams struct {
 	SongID int `json:"song_id" binding:"required"`
 }
 
+func publishUpdate(msg string) {
+	h := hub
+	for client := range h.clients {
+		fmt.Println("update ws client")
+		w, err := client.conn.NextWriter(websocket.TextMessage)
+		helpers.CheckErr(err)
+		w.Write([]byte(msg))
+	}
+}
+
 // curl -i -X PUT http://localhost:3000/playlist/song \
 //   -H "Accept: application/json" -H "Content-Type: application/json" \
 //   -d '{ "song_id": 1000 }'
 func addPlaylistSong(c *gin.Context) {
+	go publishUpdate("songAdded")
 	var params addPlaylistSongParams
 	c.BindJSON(&params)
 	playlist.AddSong(params.SongID)
@@ -128,6 +142,7 @@ func addPlaylistSong(c *gin.Context) {
 }
 
 func reset(c *gin.Context) {
+	go publishUpdate("playlistReset")
 	playlist.Reset()
 	c.JSON(http.StatusOK, helpers.NewOK())
 }
