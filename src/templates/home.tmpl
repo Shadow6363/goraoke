@@ -16,6 +16,30 @@ window.onload = function () {
         }
     }
 
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function establishWebsocketConn() {
+        conn = new WebSocket("ws://" + document.location.host + "/ws");
+        conn.onclose = async function (evt) {
+            var item = document.createElement("div");
+            item.innerHTML = "<b>Connection closed.</b>";
+            appendLog(item);
+            console.log('Taking a break...');
+            await sleep(2000);
+            console.log('Two seconds later');
+            establishWebsocketConn();
+        };
+        conn.onmessage = function (evt) {
+            var messages = evt.data.split('\n');
+            for (var i = 0; i < messages.length; i++) {
+                var item = document.createElement("div");
+                item.innerText = messages[i];
+                appendLog(item);
+            }
+        };
+    }
     document.getElementById("form").onsubmit = function () {
         if (!conn) {
             return false;
@@ -28,22 +52,9 @@ window.onload = function () {
         return false;
     };
 
+
     if (window["WebSocket"]) {
-        conn = new WebSocket("ws://" + document.location.host + "/ws");
-        conn.onclose = function (evt) {
-            var item = document.createElement("div");
-            item.innerHTML = "<b>Connection closed.</b>";
-            appendLog(item);
-            conn = new WebSocket("ws://" + document.location.host + "/ws");
-        };
-        conn.onmessage = function (evt) {
-            var messages = evt.data.split('\n');
-            for (var i = 0; i < messages.length; i++) {
-                var item = document.createElement("div");
-                item.innerText = messages[i];
-                appendLog(item);
-            }
-        };
+        establishWebsocketConn();
     } else {
         var item = document.createElement("div");
         item.innerHTML = "<b>Your browser does not support WebSockets.</b>";

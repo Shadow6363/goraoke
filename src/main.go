@@ -126,6 +126,7 @@ type addPlaylistSongParams struct {
 //   -d '{ "song_id": 1000 }'
 func addPlaylistSong(c *gin.Context) {
 	var params addPlaylistSongParams
+
 	c.BindJSON(&params)
 	playlist.AddSong(params.SongID)
 	var buffer bytes.Buffer
