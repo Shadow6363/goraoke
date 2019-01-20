@@ -1,15 +1,16 @@
 package main
 
 import (
+	"bytes"
 	"database/sql"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/elguapo1611/karaoke/src/helpers"
 	"github.com/elguapo1611/karaoke/src/playlist"
 	"github.com/elguapo1611/karaoke/src/song"
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/microcosm-cc/bluemonday"
 )
@@ -107,7 +108,7 @@ type deletePlaylistSongParams struct {
 
 // curl -i -X  DELETE http://localhost:3000/playlist/song \
 //   -H "Accept: application/json" -H "Content-Type: application/json" \
-//   -d '{ "playlist_song_id": 6 }'
+//   -d '{ "playlist_song_id": 1 }'
 func deletePlaylistSong(c *gin.Context) {
 	go publishUpdate("songRemoved")
 	var params deletePlaylistSongParams
@@ -120,25 +121,28 @@ type addPlaylistSongParams struct {
 	SongID int `json:"song_id" binding:"required"`
 }
 
-func publishUpdate(msg string) {
-	h := hub
-	for client := range h.clients {
-		fmt.Println("update ws client")
-		w, err := client.conn.NextWriter(websocket.TextMessage)
-		helpers.CheckErr(err)
-		w.Write([]byte(msg))
-	}
-}
-
 // curl -i -X PUT http://localhost:3000/playlist/song \
 //   -H "Accept: application/json" -H "Content-Type: application/json" \
 //   -d '{ "song_id": 1000 }'
 func addPlaylistSong(c *gin.Context) {
-	go publishUpdate("songAdded")
 	var params addPlaylistSongParams
 	c.BindJSON(&params)
 	playlist.AddSong(params.SongID)
+	var buffer bytes.Buffer
+	buffer.WriteString("songAdded: ")
+	buffer.WriteString(strconv.Itoa(params.SongID))
+
+	go publishUpdate(buffer.String())
 	c.JSON(http.StatusOK, helpers.NewOK())
+}
+
+// pushes a text message to all clients
+func publishUpdate(msg string) {
+	h := hub
+	for client := range h.clients {
+		fmt.Println("update ws client")
+		client.hub.broadcast <- []byte(msg)
+	}
 }
 
 func reset(c *gin.Context) {
