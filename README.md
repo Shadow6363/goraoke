@@ -5,9 +5,14 @@
 
 setup.sh
 
-CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
-docker build -t example-scratch -f Dockerfile.scratch .
-docker run -it example-scratch
+# running locally
+```
+gin --buildArgs '--tags "sqlite_fts5"' run main.go
+```
+This application uses gin to autoreload.  The extra build tags include full text search as a dependency in the sqlite golang package.
+
+# add code dependencies
+This project uses govendor to vendor all dependencies locally.  https://github.com/kardianos/govendor
 
 # curl commands
 ```

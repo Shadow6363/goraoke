@@ -66,6 +66,7 @@ func main() {
 	router.Run("localhost:3001")
 
 }
+
 func handleWebsocket(c *gin.Context) {
 	serveWs(hub, c.Writer, c.Request)
 }
