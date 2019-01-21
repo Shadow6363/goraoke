@@ -10,6 +10,7 @@ import (
 	"github.com/elguapo1611/karaoke/src/helpers"
 	"github.com/elguapo1611/karaoke/src/playlist"
 	"github.com/elguapo1611/karaoke/src/song"
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/microcosm-cc/bluemonday"
@@ -23,6 +24,7 @@ var hub *Hub
 func main() {
 	db, err = sql.Open("sqlite3", "./db/karaoke.db")
 	hub = newHub()
+
 	go hub.run()
 
 	song.Init(db)
@@ -35,6 +37,9 @@ func main() {
 	defer db.Close()
 
 	router := gin.Default()
+
+	// middleware for serving static assets
+	router.Use(static.Serve("/", static.LocalFile("./public", true)))
 
 	// set html template directory
 	router.LoadHTMLGlob("templates/*")
@@ -61,7 +66,7 @@ func main() {
 	router.GET("/remote_control", renderRemoteControl)
 
 	// page that plays the karaoke tracks
-	router.GET("/", renderKaraokeRoom)
+	// router.GET("/", renderKaraokeRoom)
 
 	router.Run("localhost:3001")
 
@@ -127,24 +132,18 @@ type addPlaylistSongParams struct {
 //   -d '{ "song_id": 1000 }'
 func addPlaylistSong(c *gin.Context) {
 	var params addPlaylistSongParams
-
 	c.BindJSON(&params)
 	playlist.AddSong(params.SongID)
 	var buffer bytes.Buffer
 	buffer.WriteString("songAdded: ")
 	buffer.WriteString(strconv.Itoa(params.SongID))
-
 	go publishUpdate(buffer.String())
 	c.JSON(http.StatusOK, helpers.NewOK())
 }
 
 // pushes a text message to all clients
 func publishUpdate(msg string) {
-	h := hub
-	for client := range h.clients {
-		fmt.Println("update ws client")
-		client.hub.broadcast <- []byte(msg)
-	}
+	hub.broadcast <- []byte(msg)
 }
 
 func reset(c *gin.Context) {

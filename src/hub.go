@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 // Hub maintains the set of active clients and broadcasts messages to the
 // clients.
 type Hub struct {
@@ -14,6 +16,14 @@ type Hub struct {
 
 	// Unregister requests from clients.
 	unregister chan *Client
+}
+
+// PublishUpdate push a message to all clients
+func (h Hub) PublishUpdate(msg string) {
+	for client := range h.clients {
+		fmt.Println("update ws client")
+		client.hub.broadcast <- []byte(msg)
+	}
 }
 
 func newHub() *Hub {

@@ -9,6 +9,12 @@
 			"revisionTime": "2017-01-09T09:34:21Z"
 		},
 		{
+			"checksumSHA1": "8G1ba+ZUvPUii0t8UPZ+x1S+4dc=",
+			"path": "github.com/gin-contrib/static",
+			"revision": "cf5e10bbd933040ff603b7f0fb85510bae9916f0",
+			"revisionTime": "2018-12-25T05:48:00Z"
+		},
+		{
 			"checksumSHA1": "90S9sFqcIo/uuwQzz1t/wYs7GEs=",
 			"path": "github.com/gin-gonic/gin",
 			"revision": "b869fe1415e4b9eb52f247441830d502aece2d4d",
@@ -39,6 +45,42 @@
 			"revisionTime": "2018-08-14T08:58:52Z",
 			"version": "v1.3",
 			"versionExact": "v1.3.0"
+		},
+		{
+			"checksumSHA1": "/JLj0YcTP5+m4hDTUoRdnIH/X6g=",
+			"path": "github.com/go-webpack/webpack",
+			"revision": "3b109c9aca4145676066b30d37a9dec48ade1846",
+			"revisionTime": "2018-11-13T12:04:34Z"
+		},
+		{
+			"checksumSHA1": "8XFv5GQbsokqWuZDxnAWJNJv/cs=",
+			"path": "github.com/go-webpack/webpack/helper",
+			"revision": "3b109c9aca4145676066b30d37a9dec48ade1846",
+			"revisionTime": "2018-11-13T12:04:34Z"
+		},
+		{
+			"checksumSHA1": "vs19PAlqsbngaETLq3VHKeg7e4w=",
+			"path": "github.com/go-webpack/webpack/reader",
+			"revision": "3b109c9aca4145676066b30d37a9dec48ade1846",
+			"revisionTime": "2018-11-13T12:04:34Z"
+		},
+		{
+			"checksumSHA1": "Tm0BUqNh/6YaF2MLpw3ayHrSVVo=",
+			"path": "github.com/go-webpack/webpack/reader/manifest",
+			"revision": "3b109c9aca4145676066b30d37a9dec48ade1846",
+			"revisionTime": "2018-11-13T12:04:34Z"
+		},
+		{
+			"checksumSHA1": "Qrx3Rm+/gShdCNcQh6drE6DrdtM=",
+			"path": "github.com/go-webpack/webpack/reader/stats",
+			"revision": "3b109c9aca4145676066b30d37a9dec48ade1846",
+			"revisionTime": "2018-11-13T12:04:34Z"
+		},
+		{
+			"checksumSHA1": "wGD29JVmOnet4qixWZsEhU2JB+o=",
+			"path": "github.com/go-webpack/webpack/util",
+			"revision": "3b109c9aca4145676066b30d37a9dec48ade1846",
+			"revisionTime": "2018-11-13T12:04:34Z"
 		},
 		{
 			"checksumSHA1": "Y2MOwzNZfl4NRNDbLCZa6sgx7O0=",
@@ -87,6 +129,12 @@
 			"path": "github.com/modern-go/reflect2",
 			"revision": "94122c33edd36123c84d5368cfb2b69df93a0ec8",
 			"revisionTime": "2018-07-18T01:23:57Z"
+		},
+		{
+			"checksumSHA1": "0H/VjT8w1CB702qWpbYMqr65Mf0=",
+			"path": "github.com/pkg/errors",
+			"revision": "ffb6e22f01932bf7ac35e0bad9be11f01d1c8685",
+			"revisionTime": "2019-01-09T06:16:28Z"
 		},
 		{
 			"checksumSHA1": "j/aP/n+qaMNBUou/a2m2LDJ5q3Q=",
