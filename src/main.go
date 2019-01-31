@@ -12,33 +12,14 @@ import (
 	"github.com/elguapo1611/karaoke/src/playlist"
 	"github.com/elguapo1611/karaoke/src/song"
 	"github.com/gin-gonic/gin"
-	"github.com/go-webpack/webpack"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/microcosm-cc/bluemonday"
-	"github.com/qor/render"
 )
 
 var db *sql.DB
 var err error
 var hub *Hub
 var env string
-
-// Render stores the pointer to the rendering defaults
-var Render *render.Render
-
-func init() {
-	// setup the default rendering and layout.
-	Render = render.New(&render.Config{
-		ViewPaths:     []string{"app/views/", "app/views/layouts"},
-		DefaultLayout: "application",
-	})
-}
-
-// ViewHelpers for use in status rendering for asset path
-func ViewHelpers() map[string]interface{} {
-	conf := webpack.BasicConfig("localhost:4000", "js/public", "/foo")
-	return map[string]interface{}{"asset": webpack.GetAssetHelper(conf)}
-}
 
 // our main function
 func main() {
@@ -51,10 +32,6 @@ func main() {
 	song.Init(db)
 	playlist.Init(db)
 
-	webpack.DevHost = "localhost:4000"
-	webpack.Plugin = "manifest"
-	webpack.Init(true)
-
 	helpers.CheckErr(err)
 	if err != nil {
 		fmt.Println(err)
@@ -64,11 +41,12 @@ func main() {
 	router := gin.Default()
 
 	// router.LoadHTMLGlob("public/*")
-	router.GET("/", renderKaraokeRoom)
+	// router.GET("/", renderKaraokeRoom)
 
 	// middleware for serving static assets
 	// router.Use(static.Serve("/", static.LocalFile("./public", true)))
 
+	// Fix this for the staticly compiled assets
 	router.GET("/public/:path")
 	// set html template directory
 	// router.LoadHTMLGlob("templates/*")
@@ -92,11 +70,9 @@ func main() {
 	router.GET("/ws", handleWebsocket)
 
 	// page for adding songs and updating the playlist
-	router.GET("/remote_control", renderRemoteControl)
+	router.GET("/", renderApp)
 
-	// page that plays the karaoke tracks
-	// router.GET("/", renderKaraokeRoom)
-
+	// Gin proxies from port 3000 to 3001 during development for hot reloading
 	router.Run("localhost:3001")
 
 }
@@ -105,19 +81,8 @@ func handleWebsocket(c *gin.Context) {
 	serveWs(hub, c.Writer, c.Request)
 }
 
-func renderRemoteControl(c *gin.Context) {
-}
-
-func renderKaraokeRoom(c *gin.Context) {
-	fmt.Println("loading karaoke room")
-	Render.Funcs(ViewHelpers()).Execute(
-		"index",
-		gin.H{
-			"title": "Karaoke",
-		},
-		c.Request,
-		c.Writer,
-	)
+// Used for rendering the html when the app is compiled
+func renderApp(c *gin.Context) {
 }
 
 func search(c *gin.Context) {
