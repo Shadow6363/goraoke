@@ -52,22 +52,22 @@ func main() {
 	// router.LoadHTMLGlob("templates/*")
 
 	// search for songs
-	router.GET("/search/:term", search)
+	router.POST("/api/search", search)
 
 	// get all songs in the playlist
-	router.GET("/playlist", getPlaylist)
+	router.GET("/api/playlist", getPlaylist)
 
 	// add a song to the playlist
-	router.PUT("/playlist/song", addPlaylistSong)
+	router.PUT("/api/playlist/song", addPlaylistSong)
 	// remove a song from the playlist
-	router.DELETE("/playlist/song", deletePlaylistSong)
+	router.DELETE("/api/playlist/song", deletePlaylistSong)
 	// reset the playlist and clear all songs
-	router.DELETE("/playlist/reset", reset)
+	router.DELETE("/api/playlist/reset", reset)
 	// change order of playlist
-	router.POST("/playlist/change_order", changeOrder)
+	router.POST("/api/playlist/change_order", changeOrder)
 
 	// websocket connection
-	router.GET("/ws", handleWebsocket)
+	router.GET("/api/ws", handleWebsocket)
 
 	// page for adding songs and updating the playlist
 	router.GET("/", renderApp)
@@ -85,9 +85,19 @@ func handleWebsocket(c *gin.Context) {
 func renderApp(c *gin.Context) {
 }
 
+type searchParams struct {
+	Term string `json:"term" binding:"required"`
+}
+
+// curl -i -X  POST http://localhost:4000/api/search \
+//   -H "Accept: application/json" -H "Content-Type: application/json" \
+//   -d '{ "term": "radio"}'
 func search(c *gin.Context) {
+	var params searchParams
+	c.BindJSON(&params)
+
 	p := bluemonday.StrictPolicy()
-	term := p.Sanitize(c.Param("term"))
+	term := p.Sanitize(params.Term)
 	songs := song.Search(term)
 	c.JSON(http.StatusOK, songs)
 }
@@ -97,7 +107,7 @@ type changeOrderParams struct {
 	SortOrder      int `json:"sort_order" binding:"required"`
 }
 
-// curl -i -X  POST http://localhost:3000/playlist/change_order \
+// curl -i -X  POST http://localhost:4000/api/playlist/change_order \
 //   -H "Accept: application/json" -H "Content-Type: application/json" \
 //   -d '{ "playlist_song_id": 6, "sort_order": 3 }'
 func changeOrder(c *gin.Context) {
@@ -111,7 +121,7 @@ type deletePlaylistSongParams struct {
 	PlaylistSongID int `json:"playlist_song_id" binding:"required"`
 }
 
-// curl -i -X  DELETE http://localhost:3000/playlist/song \
+// curl -i -X  DELETE http://localhost:4000/api/playlist/song \
 //   -H "Accept: application/json" -H "Content-Type: application/json" \
 //   -d '{ "playlist_song_id": 1 }'
 func deletePlaylistSong(c *gin.Context) {
@@ -126,7 +136,7 @@ type addPlaylistSongParams struct {
 	SongID int `json:"song_id" binding:"required"`
 }
 
-// curl -i -X PUT http://localhost:3000/playlist/song \
+// curl -i -X PUT http://localhost:4000/api/playlist/song \
 //   -H "Accept: application/json" -H "Content-Type: application/json" \
 //   -d '{ "song_id": 1000 }'
 func addPlaylistSong(c *gin.Context) {
