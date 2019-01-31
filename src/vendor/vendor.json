@@ -95,6 +95,30 @@
 			"revisionTime": "2018-12-06T07:02:39Z"
 		},
 		{
+			"checksumSHA1": "RT4fdWi53SRzxD/Qvm27KCbUoFQ=",
+			"path": "github.com/gosimple/slug",
+			"revision": "42ac18c34c2c6f4843fa48167317dcaa9416d1e2",
+			"revisionTime": "2018-12-13T20:04:36Z"
+		},
+		{
+			"checksumSHA1": "lt5bm512Xe/DCnDb61pueSy8dQQ=",
+			"path": "github.com/jinzhu/gorm",
+			"revision": "9f1a7f53511168c0567b4b4b4f10ab7d21265174",
+			"revisionTime": "2019-01-02T13:32:08Z"
+		},
+		{
+			"checksumSHA1": "4eelJOSLZoDzLuaJvgilOBVNovU=",
+			"path": "github.com/jinzhu/inflection",
+			"revision": "04140366298a54a039076d798123ffa108fff46c",
+			"revisionTime": "2018-03-08T03:36:59Z"
+		},
+		{
+			"checksumSHA1": "vwJLyUm/7VAS4xgDqZuYOygWew8=",
+			"path": "github.com/jinzhu/now",
+			"revision": "8ec929ed50c3ac25ce77ba4486e1f277c552c591",
+			"revisionTime": "2018-11-16T07:41:57Z"
+		},
+		{
 			"checksumSHA1": "Ah2HsEkTM0gBO7XNPmjtM8MAvKE=",
 			"path": "github.com/json-iterator/go",
 			"revision": "f64ce68b6eea7b957a0d0d43e224dfe491b0babe",
@@ -135,6 +159,36 @@
 			"path": "github.com/pkg/errors",
 			"revision": "ffb6e22f01932bf7ac35e0bad9be11f01d1c8685",
 			"revisionTime": "2019-01-09T06:16:28Z"
+		},
+		{
+			"checksumSHA1": "p7jIE401RLukb9db0tE1K4NialE=",
+			"path": "github.com/qor/assetfs",
+			"revision": "ff57fdc13a148d39c3e930cb27c7eaf82e376891",
+			"revisionTime": "2017-07-13T02:39:33Z"
+		},
+		{
+			"checksumSHA1": "dYOQFwEzFigyfZ12wpxRj9lTmkA=",
+			"path": "github.com/qor/qor",
+			"revision": "49b2dd4f5840f58f43d6d83fdd32baf56ffb24b2",
+			"revisionTime": "2018-12-04T07:14:47Z"
+		},
+		{
+			"checksumSHA1": "zYP/HP/YF9v4Q0oDPdwL8HcpvN0=",
+			"path": "github.com/qor/qor/utils",
+			"revision": "49b2dd4f5840f58f43d6d83fdd32baf56ffb24b2",
+			"revisionTime": "2018-12-04T07:14:47Z"
+		},
+		{
+			"checksumSHA1": "80X1OprZRhOAeKiTxk3TpjHNAWQ=",
+			"path": "github.com/qor/render",
+			"revision": "63566e46f01b134ae9882a59a06518e82a903231",
+			"revisionTime": "2017-12-01T03:34:49Z"
+		},
+		{
+			"checksumSHA1": "pvg8L4xN+zO9HLJislpVeHPPLjM=",
+			"path": "github.com/rainycape/unidecode",
+			"revision": "cb7f23ec59bec0d61b19c56cd88cee3d0cc1870c",
+			"revisionTime": "2015-09-07T02:38:54Z"
 		},
 		{
 			"checksumSHA1": "j/aP/n+qaMNBUou/a2m2LDJ5q3Q=",

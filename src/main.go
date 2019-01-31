@@ -5,23 +5,44 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/elguapo1611/karaoke/src/helpers"
 	"github.com/elguapo1611/karaoke/src/playlist"
 	"github.com/elguapo1611/karaoke/src/song"
-	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+	"github.com/go-webpack/webpack"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/microcosm-cc/bluemonday"
+	"github.com/qor/render"
 )
 
 var db *sql.DB
 var err error
 var hub *Hub
+var env string
+
+// Render stores the pointer to the rendering defaults
+var Render *render.Render
+
+func init() {
+	// setup the default rendering and layout.
+	Render = render.New(&render.Config{
+		ViewPaths:     []string{"app/views/", "app/views/layouts"},
+		DefaultLayout: "application",
+	})
+}
+
+// ViewHelpers for use in status rendering for asset path
+func ViewHelpers() map[string]interface{} {
+	conf := webpack.BasicConfig("localhost:4000", "js/public", "/foo")
+	return map[string]interface{}{"asset": webpack.GetAssetHelper(conf)}
+}
 
 // our main function
 func main() {
+	env = os.Getenv("ENV")
 	db, err = sql.Open("sqlite3", "./db/karaoke.db")
 	hub = newHub()
 
@@ -29,6 +50,10 @@ func main() {
 
 	song.Init(db)
 	playlist.Init(db)
+
+	webpack.DevHost = "localhost:4000"
+	webpack.Plugin = "manifest"
+	webpack.Init(true)
 
 	helpers.CheckErr(err)
 	if err != nil {
@@ -38,11 +63,15 @@ func main() {
 
 	router := gin.Default()
 
-	// middleware for serving static assets
-	router.Use(static.Serve("/", static.LocalFile("./public", true)))
+	// router.LoadHTMLGlob("public/*")
+	router.GET("/", renderKaraokeRoom)
 
+	// middleware for serving static assets
+	// router.Use(static.Serve("/", static.LocalFile("./public", true)))
+
+	router.GET("/public/:path")
 	// set html template directory
-	router.LoadHTMLGlob("templates/*")
+	// router.LoadHTMLGlob("templates/*")
 
 	// search for songs
 	router.GET("/search/:term", search)
@@ -81,9 +110,14 @@ func renderRemoteControl(c *gin.Context) {
 
 func renderKaraokeRoom(c *gin.Context) {
 	fmt.Println("loading karaoke room")
-	c.HTML(http.StatusOK, "home.tmpl", gin.H{
-		"title": "Karaoke",
-	})
+	Render.Funcs(ViewHelpers()).Execute(
+		"index",
+		gin.H{
+			"title": "Karaoke",
+		},
+		c.Request,
+		c.Writer,
+	)
 }
 
 func search(c *gin.Context) {
