@@ -31,6 +31,10 @@ var (
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		// This is super dangerous.... make sure this is only in development mode
+		return true
+	},
 }
 
 // Client is a middleman between the websocket connection and the hub.

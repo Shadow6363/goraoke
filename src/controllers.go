@@ -18,6 +18,7 @@ func handleWebsocket(c *gin.Context) {
 
 // Used for rendering the html when the app is compiled
 func renderApp(c *gin.Context) {
+
 }
 
 type searchParams struct {
