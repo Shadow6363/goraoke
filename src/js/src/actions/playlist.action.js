@@ -1,12 +1,13 @@
 import fetch from 'isomorphic-fetch';
 import {
   IS_SEARCHING,
-  SEARCHES_RECEIVED,
+  SEARCHES_RESULTS_RECEIVED,
   PLAYLIST_RECEIVED,
   PLAYLIST_IS_FETCHING,
   PLAYLIST_SONG_ADDED,
   PLAYLIST_UPDATED,
-  PLAYLIST_CLEARED
+  PLAYLIST_CLEARED,
+  PLAYLIST_SONG_REMOVED
 } from '../constants/reducer-actions.const';
 
 // handle results of a generic response and dispatch
@@ -24,10 +25,30 @@ function isFetching() {
   return {type: PLAYLIST_IS_FETCHING};
 }
 
+function isSearching() {
+  return {type: IS_SEARCHING}
+}
+
+function searchResultsReceived(response) {
+  return Object.assign({}, {
+    type: SEARCHES_RESULTS_RECEIVED,
+    response: response
+  })
+}
 
 // post api/search
 export function search(term) {
-
+  dispatch(isSearching());
+  fetch('api/playlist/song',
+    requestOptions({
+      method: 'POST',
+      body: JSON.stringify({
+        term: term
+      })
+    }))
+    .then( function(response) {
+      handleGenericResponse(dispatch, response, searchResultsReceived);
+    });
 }
 
 
@@ -48,51 +69,88 @@ export function getPlaylist() {
   };
 }
 
+function songAdded(response) {
+  return Object.assign({}, {
+    type: PLAYLIST_SONG_ADDED
+  })
+}
 // put api/playlist/song
 export function addPlaylistSong(songId) {
-
-}
-
-// delete api/playlist/song
-// playlist_song_id": 1 
-export function deletePlaylistSong(playlistSongId) {
-
-}
-
-// delete api/playlist/reset
-export function resetPlaylist() {
-
-}
-
-// post api/playlist/change_order
-// playlist_song_id": 6, "sort_order": 3 
-export function playlistChangeOrder(playlistSongId, sortOrder) {
-
-}
-
-
-
-
-
-function addedSong(response) {
-  return Object.assign({}, {
-    type: ADDED_SONG
-  }, response);
-}
-
-export function addSong(songId) {
   return (dispatch) => {
-    /*jshint camelcase: false */
-    dispatch(isFetching());
-    fetch('/api/rooms/add_song',
+    fetch('api/playlist/song',
       requestOptions({
-        method: 'POST',
+        method: 'PUT',
         body: JSON.stringify({
           song_id: songId
         })
       }))
       .then( function(response) {
-        handleGenericResponse(dispatch, response, addedSong);
+        handleGenericResponse(dispatch, response, songAdded);
       });
-  };
+  }
+}
+
+function playlistSongRemoved(response) {
+  return Object.assign({}, {
+    type: PLAYLIST_SONG_REMOVED
+  }, response )
+}
+// delete api/playlist/song
+// playlist_song_id": 1 
+export function removePlaylistSong(playlistSongId) {
+  return (dispatch) => {
+    fetch('api/playlist/song',
+      requestOptions({
+        method: 'DELETE',
+        body: JSON.stringify({
+          playlist_song_id: playlistSongId
+        })
+      }))
+      .then( function(response) {
+        handleGenericResponse(dispatch, response, playlistSongRemoved);
+      });
+  }
+}
+
+function playlistReset(response) {
+  return Object.assign({}, {
+    type: PLAYLIST_CLEARED
+  }, response)
+}
+
+// delete api/playlist/reset
+export function resetPlaylist() {
+  return (dispatch) => {
+    fetch('api/playlist/reset',
+      requestOptions({
+        method: 'DELETE'
+      }))
+      .then( function(response) {
+        handleGenericResponse(dispatch, response, playlistReset);
+      });
+  }
+}
+
+function playlistOrderChanged(response) {
+  return Object.assign({}, {
+    type: PLAYLIST_UPDATED
+  }, response)
+}
+
+// post api/playlist/change_order
+// playlist_song_id": 6, "sort_order": 3 
+export function playlistChangeOrder(playlistSongId, sortOrder) {
+  return (dispatch) => {
+    fetch('api/playlist/reset',
+      requestOptions({
+        method: 'POST',
+        body: JSON.stringify({
+          playlist_song_id: playlistSongId,
+          sortOrder: sortOrder
+        })
+      }))
+      .then( function(response) {
+        handleGenericResponse(dispatch, response, playlistOrderChanged);
+      });
+  }
 }
