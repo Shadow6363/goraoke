@@ -30,3 +30,31 @@ curl -i -X PUT http://localhost:3000/playlist/song \
    -H "Accept: application/json" -H "Content-Type: application/json" \
    -d '{ "song_id": 1000 }'
 ```
+
+# TODOS
+### Create components:
+  - PlaylistSongs
+  - Song
+  - Tabs (playlist, search)
+  - CDG player
+  - Next 3 songs
+  - Toastr
+  - Pause/Play, Fast Forward
+  - Search/Autocomplete with debounce
+### Actions
+  - Add song
+  - Remove Song
+  - Move Song
+  - Get playlist
+  - Fast forward/skip
+  - Pause/Play
+### Reducers
+  - Playlist Reducer
+  - Search Reducer
+  - Room Reducer
+  - Toast Reducer
+### Compile
+  - Packr all js assets into binary
+  - Test sqlite connectivity
+  - Cross compile binary for raspberrypi
+  
