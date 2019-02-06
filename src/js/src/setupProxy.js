@@ -1,7 +1,7 @@
 const proxy = require('http-proxy-middleware');
 
 module.exports = function(app) {
-  app.use(proxy('/api', { target: 'http://localhost:3000/api' }));
+  app.use(proxy('/api', { target: 'http://localhost:3000/' }));
   app.use(proxy('/api/ws', {headers: {"accept-encoding":""}, target: 'ws://localhost:3000', changeOrigin: true, "ws": true }));
   app.use(proxy("/api/ws", {headers: {"accept-encoding":""}, target: 'ws://localhost:3000', changeOrigin: true, "ws": true }));
   console.log("configuring proxy")

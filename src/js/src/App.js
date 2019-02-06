@@ -1,15 +1,20 @@
 import React from "react";
+import { Provider } from 'react-redux';
+import Playlist from './components/playlist'
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import './App.css';
+import store from './store';
 
 function KaraokeRoom() {
   return (
-    <Router>
-      <div>
-        <Route exact path="/" component={Home} />
-        <Route exact path="/playlist" component={Playlist} />
-      </div>
-    </Router>
+    <Provider store={store}>
+      <Router>
+        <div>
+          <Route exact path="/" component={Home} />
+          <Route exact path="/playlist" component={RenderPlaylist} />
+        </div>
+      </Router>
+    </Provider>
   );
 }
 
@@ -21,10 +26,11 @@ function Home() {
   );
 }
 
-function Playlist() {
+function RenderPlaylist() {
   return (
     <div>
       <h2>Playlist</h2>
+      <Playlist />
     </div>
   );
 }

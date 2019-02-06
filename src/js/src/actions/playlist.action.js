@@ -1,7 +1,7 @@
 import fetch from 'isomorphic-fetch';
 import {
   IS_SEARCHING,
-  SEARCHES_RESULTS_RECEIVED,
+  SEARCH_RESULTS_RECEIVED,
   PLAYLIST_RECEIVED,
   PLAYLIST_IS_FETCHING,
   PLAYLIST_SONG_ADDED,
@@ -10,6 +10,17 @@ import {
   PLAYLIST_SONG_REMOVED
 } from '../constants/reducer-actions.const';
 
+// set json content type headers
+export const requestOptions = function(options) {
+  return Object.assign({}, options, {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    credentials: 'same-origin'
+  });
+};
+
 // handle results of a generic response and dispatch
 function handleGenericResponse(dispatch, response, func) {
   if (response.ok) {
@@ -17,8 +28,12 @@ function handleGenericResponse(dispatch, response, func) {
       dispatch(func(body));
     });
   } else {
-    dispatch(authenticationFailed(response));
+    dispatch(errorOccurred(response));
   }
+}
+
+function errorOccurred(response) {
+
 }
 
 function isFetching() {
@@ -31,31 +46,33 @@ function isSearching() {
 
 function searchResultsReceived(response) {
   return Object.assign({}, {
-    type: SEARCHES_RESULTS_RECEIVED,
+    type: SEARCH_RESULTS_RECEIVED,
     response: response
   })
 }
 
 // post api/search
 export function search(term) {
-  dispatch(isSearching());
-  fetch('api/playlist/song',
-    requestOptions({
-      method: 'POST',
-      body: JSON.stringify({
-        term: term
-      })
-    }))
-    .then( function(response) {
-      handleGenericResponse(dispatch, response, searchResultsReceived);
-    });
+  return (dispatch) => {
+    dispatch(isSearching());
+    fetch('api/playlist/song',
+      requestOptions({
+        method: 'POST',
+        body: JSON.stringify({
+          term: term
+        })
+      }))
+      .then( function(response) {
+        handleGenericResponse(dispatch, response, searchResultsReceived);
+      });
+  }
 }
 
 
 function playlistReceived(response) {
   return Object.assign({}, {
     type: PLAYLIST_RECEIVED
-  }, response);
+  }, {playlistSongs: response});
 }
 
 // get api/playlist

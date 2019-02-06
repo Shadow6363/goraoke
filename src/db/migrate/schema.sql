@@ -23,6 +23,7 @@ CREATE TABLE songs (
   enabled DEFAULT TRUE,
   keywords,
   duration_in_seconds INTEGER,
+  image_url,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );

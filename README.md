@@ -5,10 +5,17 @@
 
 setup.sh
 
-# running locally
+# running locally each service independently
 ```
 gin --buildArgs '--tags "sqlite_fts5"' run main.go
+npm start
 ```
+
+# running locally
+```
+bash start.sh
+```
+
 This application uses gin to autoreload.  The extra build tags include full text search as a dependency in the sqlite golang package.
 
 # add code dependencies
@@ -32,6 +39,8 @@ curl -i -X PUT http://localhost:3000/playlist/song \
 ```
 
 # TODOS
+### Data ingestion:
+  - https://www.discogs.com/developers/#
 ### Create components:
   - PlaylistSongs
   - Song
