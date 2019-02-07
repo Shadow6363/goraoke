@@ -7,10 +7,8 @@ import {
   PLAYLIST_CLEARED
 } from '../constants/reducer-actions.const';
 
-const initialState = {
-  playlistSongs: [
-    {name: "foo"}
-  ]
+const initialState = {  
+  playlistSongs: []
 };
 
 export default function(state = initialState, action) {
@@ -19,12 +17,12 @@ export default function(state = initialState, action) {
     case PLAYLIST_RECEIVED:
       return {
         ...state,
-        playlistSongs: action.response
-      };
+        playlistSongs: action.payload
+      }
     case PLAYLIST_SONG_ADDED:
       return {
         ...state,
-        playlistSongs: action.response
+        playlistSongs: action.payload
       };
     default:
       return state;

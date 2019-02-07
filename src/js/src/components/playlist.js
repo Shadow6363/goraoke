@@ -17,11 +17,13 @@ class Playlist extends Component {
 
   render() {
     const playlist = this.props.playlistSongs.map(playlistSong => (
-      <div key={playlistSong.id}>
-        <h3>{playlistSong.name}</h3>
-        <p>{playlistSong.artist}</p>
+      <div key={playlistSong.ID}>
+        <h3>{playlistSong.Song.Name}</h3>
+        <p>{playlistSong.Song.Artist}</p>
+        <p>{playlistSong.Song.ID}</p>
       </div>
     ));
+    console.log(playlist);
     return (
       <div>
         <h1>Playlist</h1>
@@ -37,7 +39,7 @@ Playlist.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  playlistSongs: state.playlistSongs
+  playlistSongs: state.playlistReducer.playlistSongs
 });
 
 export default connect(mapStateToProps, { getPlaylist })(Playlist);

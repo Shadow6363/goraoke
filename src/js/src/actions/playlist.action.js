@@ -9,6 +9,7 @@ import {
   PLAYLIST_CLEARED,
   PLAYLIST_SONG_REMOVED
 } from '../constants/reducer-actions.const';
+import { compose } from 'redux';
 
 // set json content type headers
 export const requestOptions = function(options) {
@@ -69,22 +70,40 @@ export function search(term) {
 }
 
 
-function playlistReceived(response) {
-  return Object.assign({}, {
-    type: PLAYLIST_RECEIVED
-  }, {playlistSongs: response});
-}
+// function playlistReceived(response) {
+//   return Object.assign({}, {
+//     type: PLAYLIST_RECEIVED
+//   }, {playlistSongs: response});
+// }
+
+export const getPlaylist = () => dispatch => {
+  fetch('/api/playlist', {
+    method: 'GET',
+    headers: {
+      'content-type': 'application/json'
+    }
+  })
+    .then(res => res.json())
+    .then(post =>
+      dispatch({
+        type: PLAYLIST_RECEIVED,
+        payload: post
+      })
+    );
+};
 
 // get api/playlist
-export function getPlaylist() {
-  return (dispatch) => {
-    dispatch(isFetching());
-    fetch('/api/playlist')
-      .then( function(response) {
-        handleGenericResponse(dispatch, response, playlistReceived);
-      });
-  };
-}
+// export function getPlaylist() {
+//   return (dispatch) => {
+//     dispatch(isFetching());
+//     fetch('/api/playlist')
+//       .then(res => res.json())
+//       .then( function(response) {
+//         console.log(response)
+//         handleGenericResponse(dispatch, response, playlistReceived);
+//       });
+//   };
+// }
 
 function songAdded(response) {
   return Object.assign({}, {

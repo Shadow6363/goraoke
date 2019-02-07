@@ -4,9 +4,6 @@ import rootReducer from './reducers';
 
 // create a sample playlist here
 const initialState = {
-  playlistSongs: [
-    {name: "foo"}
-  ]
 };
 
 const middleware = [thunk];
