@@ -79,7 +79,9 @@ func DeletePlaylistSong(playlistSongID int) {
 
 // GetPlaylist Returns all songs in the playlist
 func GetPlaylist(limit int) []PlaylistSong {
-	var playlistSongs []PlaylistSong
+	fmt.Println("called get playlist")
+	// Make sure to return an empty array when marshalling.  []PlaylistSong{} correctly translates to an empty array when marshalled.
+	playlistSongs := []PlaylistSong{}
 	rows, err := DB.Query(`
         SELECT ps.id as playlistSongID, ps.song_id as songID, ps.user_id as userID, ps.sort_order as sortOrder, s.name, s.artist, s.source, s.language, s.filename, s.uuid
         FROM playlist_songs ps
@@ -114,6 +116,7 @@ func GetPlaylist(limit int) []PlaylistSong {
 	}
 
 	rows.Close()
+	fmt.Println(playlistSongs)
 	return playlistSongs
 }
 

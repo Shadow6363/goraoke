@@ -114,26 +114,22 @@ export function addPlaylistSong(songId) {
   }
 }
 
-function playlistSongRemoved(response) {
-  return Object.assign({}, {
-    type: PLAYLIST_SONG_REMOVED
-  }, response )
-}
 // delete api/playlist/song
 // playlist_song_id": 1 
-export function removePlaylistSong(playlistSongId) {
-  return (dispatch) => {
-    fetch('api/playlist/song',
-      requestOptions({
-        method: 'DELETE',
-        body: JSON.stringify({
-          playlist_song_id: playlistSongId
-        })
-      }))
-      .then( function(response) {
-        handleGenericResponse(dispatch, response, playlistSongRemoved);
-      });
-  }
+export const removePlaylistSong = playlistSongId => dispatch => {
+  fetch('api/playlist/song',
+    requestOptions({
+      method: 'DELETE',
+      body: JSON.stringify({
+        playlist_song_id: playlistSongId
+      })
+    }))
+    .then( function(response) {
+      dispatch({
+        type: PLAYLIST_SONG_REMOVED,
+        removedPlaylistSongId: playlistSongId
+      })
+    });
 }
 
 function playlistReset(response) {
@@ -155,19 +151,9 @@ export function resetPlaylist() {
   }
 }
 
-function playlistOrderChanged(response) {
-  return Object.assign({}, {
-    type: PLAYLIST_UPDATED
-  }, response)
-}
-
 // post api/playlist/change_order
 // playlist_song_id": 6, "sort_order": 3 
 export const playlistChangeOrder = (playlistSongId, sortOrder)  => dispatch => {
-  console.log("**********")
-  console.log(sortOrder)
-  console.log("playlist song id: " + playlistSongId)
-  console.log("**********")
   fetch('/api/playlist/change_order', {
     method: 'POST',
     headers: {
@@ -181,7 +167,7 @@ export const playlistChangeOrder = (playlistSongId, sortOrder)  => dispatch => {
     .then(res => res.json())
     .then(post =>
       dispatch({
-        type: PLAYLIST_RECEIVED,
+        type: PLAYLIST_UPDATED,
         payload: post
       })
     );

@@ -4,18 +4,24 @@ import {
   sortableHandle,
 } from 'react-sortable-hoc';
 
+import DeleteButton from './deleteButton'
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getPlaylist, playlistChangeOrder } from '../actions/playlist.action';
+import {
+  removePlaylistSong,
+  getPlaylist,
+  playlistChangeOrder
+} from '../actions/playlist.action';
 
 const DragHandle = sortableHandle(() => <span>::</span>);
-const SortableItem = sortableElement(({playlistSong}) => (
+const SortableItem = sortableElement(({playlistSong, removePlaylistSong}) => (
   <li>
     <DragHandle />
     <p><b>{playlistSong.Song.Name}</b> | {playlistSong.Song.Artist}</p>
     <p>Sort order: {playlistSong.SortOrder}</p>
     <p>ID: {playlistSong.ID}</p>
+    <DeleteButton playlistSongId={playlistSong.ID} removePlaylistSong={removePlaylistSong}/>
     <hr></hr>
   </li>
 ));
@@ -35,7 +41,7 @@ class Playlist extends Component {
 
   render() {
     const playlist = this.props.playlistSongs.map((playlistSong, index) => (
-      <SortableItem key={`playlistSongID-${playlistSong.ID}`} index={index} playlistSong={playlistSong} />
+      <SortableItem removePlaylistSong={this.props.removePlaylistSong} key={`playlistSongID-${playlistSong.ID}`} index={index} playlistSong={playlistSong} />
     ));
     return (
       <SortableContainer onSortEnd={this.onSortEnd} useDragHandle>
@@ -48,6 +54,7 @@ class Playlist extends Component {
 Playlist.propTypes = {
   getPlaylist: PropTypes.func.isRequired,
   playlistChangeOrder: PropTypes.func.isRequired,
+  removePlaylistSong: PropTypes.func.removePlaylistSong,
   playlistSongs: PropTypes.array.isRequired
 };
 
@@ -55,4 +62,4 @@ const mapStateToProps = state => ({
   playlistSongs: state.playlistReducer.playlistSongs
 });
 
-export default connect(mapStateToProps, { getPlaylist, playlistChangeOrder })(Playlist);
+export default connect(mapStateToProps, { getPlaylist, playlistChangeOrder, removePlaylistSong })(Playlist);

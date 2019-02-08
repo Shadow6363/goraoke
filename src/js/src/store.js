@@ -3,8 +3,7 @@ import thunk from 'redux-thunk';
 import rootReducer from './reducers';
 
 // create a sample playlist here
-const initialState = {
-};
+const initialState = {};
 
 const middleware = [thunk];
 
