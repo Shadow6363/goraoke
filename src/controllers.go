@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -50,6 +51,7 @@ func changeOrder(c *gin.Context) {
 	go publishUpdate("orderChanged")
 	var params changeOrderParams
 	c.BindJSON(&params)
+	fmt.Println(params)
 	c.JSON(http.StatusOK, playlist.ChangeOrder(params.PlaylistSongID, params.SortOrder))
 }
 

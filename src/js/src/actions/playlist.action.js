@@ -92,18 +92,6 @@ export const getPlaylist = () => dispatch => {
     );
 };
 
-// get api/playlist
-// export function getPlaylist() {
-//   return (dispatch) => {
-//     dispatch(isFetching());
-//     fetch('/api/playlist')
-//       .then(res => res.json())
-//       .then( function(response) {
-//         console.log(response)
-//         handleGenericResponse(dispatch, response, playlistReceived);
-//       });
-//   };
-// }
 
 function songAdded(response) {
   return Object.assign({}, {
@@ -175,18 +163,26 @@ function playlistOrderChanged(response) {
 
 // post api/playlist/change_order
 // playlist_song_id": 6, "sort_order": 3 
-export function playlistChangeOrder(playlistSongId, sortOrder) {
-  return (dispatch) => {
-    fetch('api/playlist/reset',
-      requestOptions({
-        method: 'POST',
-        body: JSON.stringify({
-          playlist_song_id: playlistSongId,
-          sortOrder: sortOrder
-        })
-      }))
-      .then( function(response) {
-        handleGenericResponse(dispatch, response, playlistOrderChanged);
-      });
-  }
+export const playlistChangeOrder = (playlistSongId, sortOrder)  => dispatch => {
+  console.log("**********")
+  console.log(sortOrder)
+  console.log("playlist song id: " + playlistSongId)
+  console.log("**********")
+  fetch('/api/playlist/change_order', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify({
+      playlist_song_id: playlistSongId,
+      sort_order: sortOrder
+    })
+  })
+    .then(res => res.json())
+    .then(post =>
+      dispatch({
+        type: PLAYLIST_RECEIVED,
+        payload: post
+      })
+    );
 }
