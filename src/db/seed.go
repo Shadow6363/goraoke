@@ -1,13 +1,14 @@
 package main
 
 import (
+	"crypto/md5"
+	"database/sql"
+	"encoding/hex"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
-	"crypto/md5"
-	"encoding/hex"
-	"database/sql"
+
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -22,7 +23,7 @@ func run() ([]string, error) {
 		fileList = append(fileList, path)
 		return err
 	})
-	
+
 	if e != nil {
 		panic(e)
 	}
@@ -31,8 +32,8 @@ func run() ([]string, error) {
 		if filepath.Ext(file) == ".mp3" {
 			filename := file
 			hasher := md5.New()
-    	hasher.Write([]byte(file))
-    	uuid := hex.EncodeToString(hasher.Sum(nil))
+			hasher.Write([]byte(file))
+			uuid := hex.EncodeToString(hasher.Sum(nil))
 
 			splitFilename := strings.Split(file, " - ")
 			artistMeta := splitFilename[0]
@@ -53,23 +54,14 @@ func run() ([]string, error) {
 					language = source
 				}
 			}
-			fmt.Println("uuid: ", uuid)
-			fmt.Println("filename: ", file)
-			fmt.Println("source: ", source)
-			fmt.Println("name: ", name)
-			fmt.Println("artist: ", artist)
-			fmt.Println("language: ", language)
-			fmt.Println(songAndMeta)
-			fmt.Println()
-
 			// insert record
 			stmt, err := db.Prepare("INSERT INTO songs(uuid, filename, source, name, artist, language) values(?,?,?,?,?,?)")
-      checkErr(err)
-      res, err := stmt.Exec(uuid, filename, source, name, artist, language)
-      checkErr(err)
-      id, err := res.LastInsertId()
-      checkErr(err)
-      fmt.Println(id)
+			checkErr(err)
+			res, err := stmt.Exec(uuid, filename, source, name, artist, language)
+			checkErr(err)
+			id, err := res.LastInsertId()
+			checkErr(err)
+			fmt.Println(id)
 
 		}
 	}
@@ -78,33 +70,33 @@ func run() ([]string, error) {
 }
 
 func checkErr(err error) {
-    if err != nil {
-        panic(err)
-    }
+	if err != nil {
+		panic(err)
+	}
 }
 
 func GetStringInBetween(str string, start string, end string) (result string) {
-    s := strings.Index(str, start)
-    if s == -1 {
-      return
-    }
-    s += len(start)
-    e := strings.Index(str, end)
-    if e == -1 {
-	    return "Karaoke"
-    }
+	s := strings.Index(str, start)
+	if s == -1 {
+		return
+	}
+	s += len(start)
+	e := strings.Index(str, end)
+	if e == -1 {
+		return "Karaoke"
+	}
 
-    fmt.Println(str)
-    final := str[s:e]
-    return final
+	fmt.Println(str)
+	final := str[s:e]
+	return final
 }
 
 func getPath() string {
-	defaultSongPath := "/Volumes/external/songs"	
+	defaultSongPath := "/Volumes/external/songs"
 	var searchDir string
 	searchDir = os.Getenv("SONG_PATH")
 	if searchDir == "" {
-	  searchDir = defaultSongPath
+		searchDir = defaultSongPath
 	}
 
 	return searchDir

@@ -14,9 +14,10 @@ const initialState = {
 export default function(state = initialState, action) {
   switch (action.type) {
     case PLAYLIST_SONG_REMOVED:
-      const filteredSongs = state.playlistSongs.filter(playlistSong => playlistSong.ID != action.playlistSongId);
-      
+      const filteredSongs = state.playlistSongs.filter(playlistSong => playlistSong.ID != action.removedPlaylistSongId);
+      console.log(action)
       return {
+        ...state,
         playlistSongs: filteredSongs
       }
     case PLAYLIST_RECEIVED:

@@ -82,6 +82,14 @@ func GetPlaylist(limit int) []PlaylistSong {
 	fmt.Println("called get playlist")
 	// Make sure to return an empty array when marshalling.  []PlaylistSong{} correctly translates to an empty array when marshalled.
 	playlistSongs := []PlaylistSong{}
+	// var playlistSongs = []PlaylistSong
+	// fmt.Println(playlistSongs) // []
+	// c.JSON(http.StatusOK, playlist) // Null
+
+	// playlistSongs := []PlaylistSong{}
+	// fmt.Println(playlistSongs) // []
+	// c.JSON(http.StatusOK, playlist) // []
+
 	rows, err := DB.Query(`
         SELECT ps.id as playlistSongID, ps.song_id as songID, ps.user_id as userID, ps.sort_order as sortOrder, s.name, s.artist, s.source, s.language, s.filename, s.uuid
         FROM playlist_songs ps

@@ -18,6 +18,6 @@ export default class DeleteButton extends React.Component {
 }
 
 DeleteButton.propTypes = {
-  removePlaylistSong: PropTypes.func.removePlaylistSong,
+  removePlaylistSong: PropTypes.func.isRequired,
   playlistSongId: PropTypes.number.isRequired
 };

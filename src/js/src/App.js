@@ -30,7 +30,7 @@ function RenderPlaylist() {
   return (
     <div>
       <h2>Playlist</h2>
-      <Playlist />
+      <Playlist removePlaylistSong={() => {}}/>
     </div>
   );
 }

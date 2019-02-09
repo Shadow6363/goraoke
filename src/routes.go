@@ -19,6 +19,7 @@ func loadRoutes() {
 
 	// search for songs
 	router.POST("/api/search", search)
+	router.GET("/api/search", search)
 
 	// get all songs in the playlist
 	router.GET("/api/playlist", getPlaylist)

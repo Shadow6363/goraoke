@@ -154,6 +154,8 @@ export function resetPlaylist() {
 // post api/playlist/change_order
 // playlist_song_id": 6, "sort_order": 3 
 export const playlistChangeOrder = (playlistSongId, sortOrder)  => dispatch => {
+  console.log("moving id: ", playlistSongId )
+  console.log("to: ", sortOrder)
   fetch('/api/playlist/change_order', {
     method: 'POST',
     headers: {

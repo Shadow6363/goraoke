@@ -31,17 +31,25 @@ const SortableContainer = sortableContainer(({children}) => {
 });
 
 class Playlist extends Component {
+  componentDidMount() {
+    console.log(this.props.removePlaylistSong)
+  }
+
+  componentDidUpdate() {
+    console.log('componentDidUpdate', this.props.removePlaylistSong)
+  }
+
   componentWillMount() {
     this.props.getPlaylist();
   }
 
   onSortEnd = ({oldIndex, newIndex}) => {
-    this.props.playlistChangeOrder(this.props.playlistSongs[oldIndex].ID, newIndex+1)
+    this.props.playlistChangeOrder(this.props.playlistSongs[oldIndex].ID, this.props.playlistSongs[newIndex].SortOrder)
   };
 
   render() {
     const playlist = this.props.playlistSongs.map((playlistSong, index) => (
-      <SortableItem removePlaylistSong={this.props.removePlaylistSong} key={`playlistSongID-${playlistSong.ID}`} index={index} playlistSong={playlistSong} />
+      <SortableItem removePlaylistSong={this.props.removePlaylistSong} sortOrder={playlistSong.SortOrder} key={`playlistSongID-${playlistSong.ID}`} index={index} playlistSong={playlistSong} />
     ));
     return (
       <SortableContainer onSortEnd={this.onSortEnd} useDragHandle>
@@ -54,7 +62,7 @@ class Playlist extends Component {
 Playlist.propTypes = {
   getPlaylist: PropTypes.func.isRequired,
   playlistChangeOrder: PropTypes.func.isRequired,
-  removePlaylistSong: PropTypes.func.removePlaylistSong,
+  removePlaylistSong: PropTypes.func.isRequired,
   playlistSongs: PropTypes.array.isRequired
 };
 
