@@ -1,5 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {
+  Button,
+  Popconfirm,
+  Icon
+} from 'antd';
 
 export default class DeleteButton extends React.Component {
   handleClick() {
@@ -10,10 +15,11 @@ export default class DeleteButton extends React.Component {
   render() {
     // This syntax ensures `this` is bound within handleClick
     return (
-      <button onClick={(e) => this.handleClick(e)}>
-        Delete
-      </button>
-    );
+      <Popconfirm placement="left" title="Are you sure？" onConfirm={(e) => this.handleClick(e)} icon={<Icon type="question-circle-o" style={{ color: 'red' }} />}>
+        <Button type="danger" size="small">delete</Button>
+      </Popconfirm>
+      
+    )
   }
 }
 

@@ -53,20 +53,23 @@ function searchResultsReceived(response) {
 }
 
 // post api/search
-export function search(term) {
-  return (dispatch) => {
-    dispatch(isSearching());
-    fetch('api/playlist/song',
-      requestOptions({
-        method: 'POST',
-        body: JSON.stringify({
-          term: term
-        })
-      }))
-      .then( function(response) {
-        handleGenericResponse(dispatch, response, searchResultsReceived);
-      });
-  }
+export const search = (term) => dispatch => {
+  fetch('/api/search', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify({
+      term: term
+    })
+  })
+    .then(res => res.json())
+    .then(post =>
+      dispatch({
+        type: SEARCH_RESULTS_RECEIVED,
+        payload: post
+      })
+    );
 }
 
 
@@ -154,8 +157,6 @@ export function resetPlaylist() {
 // post api/playlist/change_order
 // playlist_song_id": 6, "sort_order": 3 
 export const playlistChangeOrder = (playlistSongId, sortOrder)  => dispatch => {
-  console.log("moving id: ", playlistSongId )
-  console.log("to: ", sortOrder)
   fetch('/api/playlist/change_order', {
     method: 'POST',
     headers: {

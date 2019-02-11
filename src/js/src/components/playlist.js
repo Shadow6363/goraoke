@@ -14,31 +14,34 @@ import {
   playlistChangeOrder
 } from '../actions/playlist.action';
 
-const DragHandle = sortableHandle(() => <span>::</span>);
-const SortableItem = sortableElement(({playlistSong, removePlaylistSong}) => (
-  <li>
-    <DragHandle />
-    <p><b>{playlistSong.Song.Name}</b> | {playlistSong.Song.Artist}</p>
-    <p>Sort order: {playlistSong.SortOrder}</p>
-    <p>ID: {playlistSong.ID}</p>
-    <DeleteButton playlistSongId={playlistSong.ID} removePlaylistSong={removePlaylistSong}/>
-    <hr></hr>
-  </li>
+import {
+  List,
+  Skeleton,
+  Row,
+  Col,
+  Card,
+  Icon,
+  Button
+} from 'antd';
+
+const DragHandle = sortableHandle(() => <Icon type="ellipsis" />);
+const SortableItem = sortableElement(({playlistSong, removePlaylistSong, props}) => (
+  <Skeleton avatar title={false} loading={props.isLoading} active>
+    <List.Item actions={[
+      <Button shape="circle" icon="caret-up" />,
+      <Button shape="circle" icon="caret-down" />,
+      <DeleteButton playlistSongId={playlistSong.ID} removePlaylistSong={removePlaylistSong}/>
+    ]}>
+      <DragHandle /> <b>{playlistSong.Song.Name}</b> | {playlistSong.Song.Artist}
+    </List.Item>
+  </Skeleton>
 ));
 
 const SortableContainer = sortableContainer(({children}) => {
-  return <ul>{children}</ul>;
+  return <div>{children}</div>;
 });
 
 class Playlist extends Component {
-  componentDidMount() {
-    console.log(this.props.removePlaylistSong)
-  }
-
-  componentDidUpdate() {
-    console.log('componentDidUpdate', this.props.removePlaylistSong)
-  }
-
   componentWillMount() {
     this.props.getPlaylist();
   }
@@ -49,12 +52,20 @@ class Playlist extends Component {
 
   render() {
     const playlist = this.props.playlistSongs.map((playlistSong, index) => (
-      <SortableItem removePlaylistSong={this.props.removePlaylistSong} sortOrder={playlistSong.SortOrder} key={`playlistSongID-${playlistSong.ID}`} index={index} playlistSong={playlistSong} />
+      <SortableItem props={this.props} removePlaylistSong={this.props.removePlaylistSong} sortOrder={playlistSong.SortOrder} key={`playlistSongID-${playlistSong.ID}`} index={index} playlistSong={playlistSong} />
     ));
     return (
-      <SortableContainer onSortEnd={this.onSortEnd} useDragHandle>
-        {playlist}
-      </SortableContainer>
+      
+        <Row gutter={16}>
+          <Col className="gutter-row" span={24}>
+            <Card>
+              <SortableContainer onSortEnd={this.onSortEnd} useDragHandle>
+                {playlist}
+              </SortableContainer>
+            </Card>
+          </Col>
+        </Row>
+      
     );
   }
 }
@@ -63,11 +74,15 @@ Playlist.propTypes = {
   getPlaylist: PropTypes.func.isRequired,
   playlistChangeOrder: PropTypes.func.isRequired,
   removePlaylistSong: PropTypes.func.isRequired,
-  playlistSongs: PropTypes.array.isRequired
+  playlistSongs: PropTypes.array.isRequired,
+  isLoading: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = state => ({
-  playlistSongs: state.playlistReducer.playlistSongs
+  playlistSongs: state.playlistReducer.playlistSongs,
+  isLoading: state.playlistReducer.isLoading
 });
 
 export default connect(mapStateToProps, { getPlaylist, playlistChangeOrder, removePlaylistSong })(Playlist);
+
+

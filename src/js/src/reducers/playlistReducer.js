@@ -8,32 +8,36 @@ import {
 } from '../constants/reducer-actions.const';
 
 const initialState = {  
-  playlistSongs: []
+  playlistSongs: [],
+  isLoading: true
 };
 
 export default function(state = initialState, action) {
   switch (action.type) {
     case PLAYLIST_SONG_REMOVED:
       const filteredSongs = state.playlistSongs.filter(playlistSong => playlistSong.ID != action.removedPlaylistSongId);
-      console.log(action)
       return {
         ...state,
-        playlistSongs: filteredSongs
+        playlistSongs: filteredSongs,
+        isLoading: false
       }
     case PLAYLIST_RECEIVED:
       return {
         ...state,
-        playlistSongs: action.payload
+        playlistSongs: action.payload,
+        isLoading: false
       }
     case PLAYLIST_UPDATED:
       return {
         ...state,
-        playlistSongs: action.payload
+        playlistSongs: action.payload,
+        isLoading: false
       }
     case PLAYLIST_SONG_ADDED:
       return {
         ...state,
-        playlistSongs: action.payload
+        playlistSongs: action.payload,
+        isLoading: false
       };
     default:
       return state;
